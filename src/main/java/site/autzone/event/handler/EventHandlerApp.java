@@ -9,9 +9,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @SpringBootApplication
 @EnableJpaAuditing
 @ComponentScan({"site.autzone.event.handler", "site.autzone.sqlbee"})
-public class Application {
+public class EventHandlerApp {
 
   public static void main(String[] args) {
-    new SpringApplicationBuilder(Application.class).run(args);
+    new SpringApplicationBuilder(EventHandlerApp.class).run(args);
   }
 }

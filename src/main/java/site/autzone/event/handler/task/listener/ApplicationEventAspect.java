@@ -1,5 +1,7 @@
 package site.autzone.event.handler.task.listener;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Optional;
 
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -12,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import site.autzone.event.handler.domain.Item;
-import site.autzone.event.handler.domain.repository.ItemCrudRepository;
+import site.autzone.event.handler.repository.ItemCrudRepository;
 import site.autzone.event.handler.task.discovery.TaskEvent;
 
 @Aspect
@@ -35,29 +37,33 @@ public class ApplicationEventAspect {
 		Optional<Item> itemOp = itemCrudRepository.findById(itemSource.getId());
 		if (itemOp.isPresent()) {
 			Item item = itemOp.get();
-			TASKLOG.info(String.format("%s::%s::%s::%s", itemSource.getConsumerKey(), itemSource.getBatchId(),
-					itemSource.getName(), "任务开始执行."));
+			TASKLOG.info("{}::{}::{}::{}", itemSource.getConsumerKey(), itemSource.getBatchId(),
+					itemSource.getName(), "task starts running execute.");
 			try {
 				pjp.proceed();
 				if (!TaskStatus.RanToCompletion.getName().equals(item.getStatus())) {
 					item.setStatus(TaskStatus.RanToCompletion.getName());
 				}
-				TASKLOG.info(String.format("%s::%s::%s::%s", item.getConsumerKey(), item.getBatchId(), item.getName(),
-						"任务完成执行."));
+				TASKLOG.info("{}::{}::{}::{}", item.getConsumerKey(), item.getBatchId(), item.getName(),
+						"The task is completed and executed.");
 			} catch (Throwable e) {
-				e.printStackTrace();
+				StringWriter writer = new StringWriter();
+				PrintWriter printWriter = new PrintWriter(writer);
+				e.printStackTrace( printWriter);
+				printWriter.flush();
+				String stackTrace = writer.toString();
 				item.setStatus(TaskStatus.Faulted.getName());
 				item.setFinishMessage("任务执行失败.");
-				item.setDetail(e.getMessage());
-				TASKLOG.info(String.format("%s::%s::%s::%s", itemSource.getConsumerKey(), itemSource.getBatchId(),
-						itemSource.getName(), "任务执行失败." + e.getMessage()));
+				item.setDetail(stackTrace);
+				TASKLOG.error("{}::{}::{}::{}", itemSource.getConsumerKey(), itemSource.getBatchId(),
+						itemSource.getName(), "The task execution failed." + stackTrace);
 			} finally {
 				itemCrudRepository.save(item);
 			}
 
 		} else {
-			TASKLOG.info(String.format("%s::%s::%s::%s", itemSource.getConsumerKey(), itemSource.getBatchId(),
-					itemSource.getName(), "任务不见了，不再执行."));
+			TASKLOG.info("{}::{}::{}::{}", itemSource.getConsumerKey(), itemSource.getBatchId(),
+					itemSource.getName(), "The task is gone and will no longer be executed.");
 		}
 	}
 }

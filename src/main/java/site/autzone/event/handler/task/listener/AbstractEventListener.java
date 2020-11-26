@@ -57,9 +57,7 @@ public abstract class AbstractEventListener
     if (item == null) {
       TASKLOG.info(message);
     } else {
-      TASKLOG.info(
-          String.format(
-              "%s::%s::%s::%s", item.getConsumerKey(), item.getBatchId(), item.getName(), message));
+      TASKLOG.info("{}::{}::{}::{}", item.getConsumerKey(), item.getBatchId(), item.getName(), message);
     }
   }
 

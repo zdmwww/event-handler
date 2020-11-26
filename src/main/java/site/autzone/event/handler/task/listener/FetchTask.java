@@ -2,7 +2,7 @@ package site.autzone.event.handler.task.listener;
 
 import java.util.concurrent.BlockingQueue;
 import site.autzone.event.handler.domain.Item;
-import site.autzone.event.handler.domain.repository.ICustomItemRepository;
+import site.autzone.event.handler.repository.ICustomItemRepository;
 
 /**
  * 获取任务到队列中

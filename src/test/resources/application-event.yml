@@ -8,20 +8,7 @@ eventexcutor:
   thread-name-prefix: EVENT_DEFAULT_EXCUTOR
 
 autzone: 
-  datasource:
-    jdbc-url: jdbc:h2:mem:testdb
-    username: root
-    password: mysql123
-    driver-class-name: org.h2.Driver
   helloTask: 
-    enable: false
-    eventexcutor: 
-      core-pool-size: 1
-      max-pool-size: 1
-      queue-capacity: 10
-      keep-alive-seconds: 10
-      thread-name-prefix: HELLO_WORLD
-  clean: 
     enable: false
     eventexcutor: 
       core-pool-size: 1
@@ -33,6 +20,12 @@ autzone:
 spring:
   application: 
     name: 智慧助手
+  datasource:
+    jdbc-url: jdbc:mysql://10.15.2.48:3306/smart_event?useUnicode=true&characterEncoding=UTF8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: mysql123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    
   http:
     encoding:
       charset: UTF-8

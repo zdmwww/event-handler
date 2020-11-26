@@ -7,7 +7,7 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import site.autzone.event.handler.domain.repository.ICustomItemRepository;
+import site.autzone.event.handler.repository.ICustomItemRepository;
 import site.autzone.event.handler.task.Task;
 import site.autzone.event.handler.task.discovery.TaskEventMulticaster;
 import site.autzone.event.handler.task.listener.CastTask;

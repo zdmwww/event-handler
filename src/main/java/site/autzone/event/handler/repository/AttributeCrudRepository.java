@@ -1,4 +1,4 @@
-package site.autzone.event.handler.domain.repository;
+package site.autzone.event.handler.repository;
 
 import org.springframework.data.repository.CrudRepository;
 import site.autzone.event.handler.domain.Attribute;

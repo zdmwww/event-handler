@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import site.autzone.event.handler.domain.Item;
-import site.autzone.event.handler.domain.repository.CustomItemRepository;
-import site.autzone.event.handler.domain.repository.ItemCrudRepository;
+import site.autzone.event.handler.repository.CustomItemRepository;
+import site.autzone.event.handler.repository.ItemCrudRepository;
 import site.autzone.event.handler.rest.domain.dto.ItemDto;
 
 @RestController

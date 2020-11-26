@@ -1,4 +1,7 @@
 package site.autzone.event.handler.rest.exception;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.sql.SQLException;
 import java.util.Date;
 import org.springframework.http.HttpHeaders;
@@ -22,14 +25,14 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 
   @ExceptionHandler(Exception.class)
   public final ResponseEntity<ExceptionResponse> handleAllExceptions(Exception ex, WebRequest request) {
-    ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getMessage(),
+    ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), getStackTrace(ex),
         request.getDescription(false));
     return new ResponseEntity<>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   @ExceptionHandler(SQLException.class)
   public final ResponseEntity<ExceptionResponse> handleUserNotFoundException(SQLException ex, WebRequest request) {
-    ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getMessage(),
+    ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), getStackTrace(ex),
         request.getDescription(false));
     return new ResponseEntity<>(exceptionResponse, HttpStatus.SERVICE_UNAVAILABLE);
   }
@@ -45,8 +48,15 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
   
   @ExceptionHandler(ItemNotFoundException.class)
   public final ResponseEntity<ExceptionResponse> itemNotFoundException(Exception ex, WebRequest request) {
-    ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getMessage(),
+    ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), getStackTrace(ex),
         request.getDescription(false));
     return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
+  }
+  
+  protected String getStackTrace(Throwable aThrowable) {
+	final Writer result = new StringWriter();
+	final PrintWriter printWriter = new PrintWriter(result);
+	aThrowable.printStackTrace(printWriter);
+	return result.toString();
   }
 }

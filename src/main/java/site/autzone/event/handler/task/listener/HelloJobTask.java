@@ -16,9 +16,9 @@ import site.autzone.event.handler.task.discovery.TaskEvent;
     description = "示例参数",
     sampleValues = {"lol"})
 @TaskConsumer(interval = 3000, batchSize = 1000, workNum = 200)
-@TaskExecutor(corePoolSize = 2, maxPoolSize = 10, queueCapacity = 100, keepAliveSeconds = 300)
+@TaskExecutor(corePoolSize = 200, maxPoolSize = 300, queueCapacity = 500, keepAliveSeconds = 300)
 @Component
-public class HelloTask extends AbstractJobEventListener {
+public class HelloJobTask extends AbstractJobEventListener {
   @Override
   public void onApplicationEvent(TaskEvent event) {
     Optional<Attribute> attrOptional = event.getItemArg("message");

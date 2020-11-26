@@ -12,16 +12,16 @@ public @interface TaskConsumer {
    * 一个消费者缓存的任务数
    * @return
    */
-  int workNum() default 10;
+  int workNum() default 1;
   /**
    * 消费者扫描一次数据库获取的任务数量
    * @return
    */
-  int batchSize() default 100;
+  int batchSize() default 1000;
   
   /**
    * 任务消费者获取任务的间隔时间（单位毫秒）
    * @return
    */
-  int interval() default 1000;
+  int interval() default 120000;
 }

@@ -9,16 +9,16 @@ import site.autzone.event.handler.task.TaskConsumer;
 import site.autzone.event.handler.task.TaskExecutor;
 import site.autzone.event.handler.task.discovery.TaskEvent;
 
-@Task(consumerKey = "HELLO_WORLD", description = "示例任务", created = "2017-08-12 15:58:00")
+@Task(consumerKey = "HELLO_WORLD2", description = "示例任务", created = "2017-08-12 15:58:00")
 @TaskArg(
     required = true,
     argCode = "message",
     description = "示例参数",
     sampleValues = {"lol"})
 @TaskConsumer(interval = 3000, batchSize = 1000, workNum = 200)
-@TaskExecutor(corePoolSize = 2, maxPoolSize = 10, queueCapacity = 100, keepAliveSeconds = 300)
+@TaskExecutor(corePoolSize = 200, maxPoolSize = 300, queueCapacity = 500, keepAliveSeconds = 300)
 @Component
-public class HelloTask extends AbstractJobEventListener {
+public class HelloJobTask2 extends AbstractJobEventListener {
   @Override
   public void onApplicationEvent(TaskEvent event) {
     Optional<Attribute> attrOptional = event.getItemArg("message");

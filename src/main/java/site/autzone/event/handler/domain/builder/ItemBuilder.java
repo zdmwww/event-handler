@@ -3,8 +3,12 @@ package site.autzone.event.handler.domain.builder;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
+import org.springframework.beans.BeanUtils;
+import net.xdevelop.snowflake.SnowflakeUidGenerator;
 import site.autzone.configurer.AbstractConfiguredBuilder;
 import site.autzone.configurer.Configurer;
 import site.autzone.event.handler.domain.Attribute;
@@ -12,6 +16,7 @@ import site.autzone.event.handler.domain.Item;
 import site.autzone.event.handler.task.listener.TaskStatus;
 
 public class ItemBuilder extends AbstractConfiguredBuilder<Item> {
+  private SnowflakeUidGenerator snowflakeUidGenerator;
   private Set<Attribute> attributes = new LinkedHashSet<Attribute>();
   private String batchId = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")).toString();
   private String consumerKey;
@@ -26,6 +31,16 @@ public class ItemBuilder extends AbstractConfiguredBuilder<Item> {
   private String routeKey;
   private String status = TaskStatus.Created.getName();
   private int version;
+  private Map<String, Object> mapFields = new HashMap<String, Object>();
+  
+  public ItemBuilder(SnowflakeUidGenerator snowflakeUidGenerator) {
+    this.snowflakeUidGenerator = snowflakeUidGenerator;
+  }
+
+  public ItemBuilder map(String k, Object v) {
+    mapFields.put(k, v);
+    return this;
+  }
   
   public ItemBuilder batchId(String batchId) {
     this.batchId = batchId;
@@ -110,10 +125,12 @@ public class ItemBuilder extends AbstractConfiguredBuilder<Item> {
 
   @Override
   protected Item performBuild() {
+    System.out.println(this); 
     Item item = new Item();
-    attributes.forEach(attr -> {
-      attr.setItem(item);
-    });
+    long id = this.snowflakeUidGenerator.getUID();
+    if(!this.mapFields.isEmpty()) {
+      BeanUtils.copyProperties(this.mapFields, item);
+    }
     item.setAttributes(attributes);
     item.setBatchId(this.batchId);
     item.setConsumerKey(this.consumerKey);
@@ -128,6 +145,11 @@ public class ItemBuilder extends AbstractConfiguredBuilder<Item> {
     item.setRouteKey(routeKey);
     item.setStatus(status);
     item.setVersion(version);
+    item.setId(id);
+    attributes.forEach(attr -> {
+      attr.setItem(item);
+      attr.setId(this.snowflakeUidGenerator.getUID());
+    });
     return item;
   }
 }

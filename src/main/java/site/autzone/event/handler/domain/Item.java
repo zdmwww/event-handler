@@ -5,19 +5,17 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Version;
 import org.hibernate.annotations.OptimisticLocking;
+import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -31,8 +29,6 @@ public class Item implements Serializable {
 	private static final long serialVersionUID = -4318353461544635745L;
 	@Id
 	@Column(name = "ID_", unique = true)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "itemquence")
-	//@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	@Version
 	private Integer version;
@@ -48,7 +44,8 @@ public class Item implements Serializable {
 	private String consumerKey;
 	@Column(name = "DESC_", length = 2000)
 	private String desc;
-	@Column(name = "DETAIL_", length = 4000)
+	@Column(name = "DETAIL_", length = 65535, columnDefinition="TEXT")
+    @Type(type="text")
 	private String detail;
 	@CreatedDate
 	@Column(name = "CREATE_TIME_")
@@ -62,7 +59,7 @@ public class Item implements Serializable {
 	private String status;
 	@Column(name = "FINISH_MESSAGE_", length = 2000)
 	private String finishMessage;
-	@OneToMany(mappedBy="item",cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+	@OneToMany(mappedBy="item", fetch=FetchType.EAGER)
     private Set<Attribute> attributes;
 	
 	public Long getId() {

@@ -1,11 +1,8 @@
 package site.autzone.event.handler.domain;
 
 import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -21,8 +18,6 @@ public class Attribute implements Serializable {
 
 	@Id
 	@Column(name = "ID_")
-	//@GeneratedValue(strategy=GenerationType.AUTO)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "attributequence")
 	private Long id;
 
 	@Column(name = "KEY_", length = 255)

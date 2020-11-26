@@ -9,8 +9,10 @@ eventexcutor:
 
 autzone: 
   datasource:
-    jdbc-url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
+    jdbc-url: ${DB_URL:jdbc:mysql://10.15.2.48:3306/smart_reminder?useUnicode=true&characterEncoding=UTF8&useSSL=false&serverTimezone=Asia/Shanghai}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:mysql123}
+    driver-class-name: com.mysql.cj.jdbc.Driver
   helloTask: 
     enable: false
     eventexcutor: 

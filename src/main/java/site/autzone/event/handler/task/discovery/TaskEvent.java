@@ -1,17 +1,12 @@
 package site.autzone.event.handler.task.discovery;
 
 import java.util.Optional;
-
 import org.apache.commons.beanutils.ConvertUtils;
 import org.springframework.context.ApplicationEvent;
 import site.autzone.event.handler.domain.Attribute;
 import site.autzone.event.handler.domain.Item;
 
-/**
- * 
- * @author xiaowj
- *
- */
+/** @author xiaowj */
 public class TaskEvent extends ApplicationEvent {
 
   private static final long serialVersionUID = 1L;
@@ -25,6 +20,24 @@ public class TaskEvent extends ApplicationEvent {
 
   public Item getItem() {
     return this.item;
+  }
+
+  public String getString(String key) {
+    Optional<Attribute> attr = this.getItemArg(key);
+    if (attr.isPresent()) {
+      return attr.get().getValue();
+    } else {
+      return null;
+    }
+  }
+  
+  public <T> T get(String key, Class<T> cl) {
+    Optional<T> attr = this.getItemArg(key, cl);
+    if (attr.isPresent()) {
+      return attr.get();
+    } else {
+      return null;
+    }
   }
 
   public Optional<Attribute> getItemArg(String key) {

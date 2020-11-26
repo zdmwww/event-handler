@@ -12,15 +12,13 @@ pom.xml中增加以下依赖：
 </dependency>
 ```
 
-### 2. 配置异常处理数据源
-配置文件中增加异常处理数据源的配置信息：
+### 2. 配置数据源
+配置文件中增加数据源的配置信息：
 ```properties
 autzone: 
   datasource:
-    jdbc-url: ${EXCEPTION_DB_URL:jdbc:mysql://10.15.2.48:3306/smart_reminder?useUnicode=true&characterEncoding=UTF8&useSSL=false&serverTimezone=Asia/Shanghai}
-    username: ${EXCEPTION_DB_USERNAME:root}
-    password: ${EXCEPTION_DB_PASSWORD:mysql123}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    jdbc-url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
 ```
 
 ### 3. 增加扫描包路径
@@ -33,12 +31,12 @@ site.autzone.event.handler
 ```java
 @Autowired ItemCrudRepository itemCrudRepository;
 
-//在需要异常重试的代码创建Item,持久化到数据库中
+//持久化Item到数据库中
 itemCrudRepository.save(//持久化数据
     new ItemBuilder()
         .name("名称")//名称
         .desc("这是描述信息")//描述
-        .consumerKey("hello")//消费者的key
+        .consumerKey("HELLO_WORLD")//消费者的key
         .itemSource("test")//处理的来源
         .attribute()//需要写入的参数
         .attr("param1", "010")//示例参数1

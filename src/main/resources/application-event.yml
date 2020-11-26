@@ -10,8 +10,6 @@ eventexcutor:
 autzone: 
   datasource:
     jdbc-url: jdbc:h2:mem:testdb
-    username: root
-    password: mysql123
     driver-class-name: org.h2.Driver
   helloTask: 
     enable: false

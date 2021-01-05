@@ -1,0 +1,33 @@
+tasks: 
+  event-tasks:
+     -
+       consumer-key: hello_world  #task配置
+       name: 示例任务
+       fetchers: 1
+       size: 1000
+       interval: 3000
+       enable: true  #是否可用
+       args:
+         -
+           key: whoami
+           value: codeman
+         -
+           key: message
+           value: lol
+     -
+       consumer-key: scriptTask  #task配置
+       name: 脚本任务
+       fetchers: 1
+       size: 1000
+       interval: 4000
+       enable: true  #是否可用
+       args:
+         -
+           key: whoami
+           value: codeman
+         -
+           key: message
+           value: lol
+     -
+       consumer-key: clean  #task配置
+       enable: false  #是否可用

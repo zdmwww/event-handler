@@ -4,6 +4,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.sql.SQLException;
 import java.util.Date;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import site.autzone.event.handler.rest.domain.ItemNotFoundException;
+import site.autzone.event.handler.item.rest.ItemNotFoundException;
 
 /**
  * 根据异常组织异常信息返回
@@ -22,6 +24,7 @@ import site.autzone.event.handler.rest.domain.ItemNotFoundException;
 @ControllerAdvice
 @RestController
 public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
+  private static Logger LOG = LoggerFactory.getLogger("TASKLOG");
 
   @ExceptionHandler(Exception.class)
   public final ResponseEntity<ExceptionResponse> handleAllExceptions(Exception ex, WebRequest request) {
@@ -54,6 +57,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
   }
   
   protected String getStackTrace(Throwable aThrowable) {
+    LOG.error("rest error:", aThrowable);
 	final Writer result = new StringWriter();
 	final PrintWriter printWriter = new PrintWriter(result);
 	aThrowable.printStackTrace(printWriter);

@@ -1,47 +1,25 @@
 server.port: 9801
 
-eventexcutor: 
-  core-pool-size: 50
-  max-pool-size: 100
-  queue-capacity: 5000
-  keep-alive-seconds: 300
-  thread-name-prefix: EVENT_DEFAULT_EXCUTOR
-
-autzone: 
-  helloTask: 
-    enable: false
-    eventexcutor: 
-      core-pool-size: 1
-      max-pool-size: 1
-      queue-capacity: 10
-      keep-alive-seconds: 10
-      thread-name-prefix: HELLO_WORLD
-
 spring:
   application: 
-    name: 智慧助手
-  datasource:
-    jdbc-url: jdbc:mysql://10.15.2.48:3306/smart_event?useUnicode=true&characterEncoding=UTF8&useSSL=false&serverTimezone=Asia/Shanghai
-    username: root
-    password: mysql123
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    
+    name: event-handler
   http:
     encoding:
       charset: UTF-8
       enabled: true
       force: true
-      
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    
-#Swagger Configure Properties
-sop:
-  swagger:
-    enable: true
-    packageScan: site.autzone.event.handler.rest
-    title: Restfull API
-    description: Restfull API
-    version: 1.0
+
+autzone:
+  partition: 1 #配置item的分表数目
+  init-database: #配置初始化数据库
+    open: false  #是否初始化数据库
+    partition: 10 #初始化分区数目
+    init-sql-path: db/init-mysql.sql #初始化sql语句
+  #item数据源配置druid
+  datasource:
+    url: ${DB_URL:jdbc:mysql://autzone.site:3306/smart_reminder?useUnicode=true&characterEncoding=UTF8&useSSL=false&serverTimezone=Asia/Shanghai}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:mysql123}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    druid.initial-size: 10
+    druid.max-active: 500

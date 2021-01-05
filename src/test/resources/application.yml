@@ -1,1 +1,3 @@
 spring.profiles.active: ${ENV_TYPE:event}
+logging.config: ${LOGING_CONFIG:classpath:logback/logback-event.xml}
+springfox.documentation.swagger-ui.enabled: true

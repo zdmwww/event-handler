@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -26,12 +27,17 @@ import site.autzone.event.handler.task.annotation.Task;
 import site.autzone.event.handler.task.event.TaskEventMulticaster;
 import site.autzone.sqlbee.SqlRunner;
 
+import javax.sql.DataSource;
+
 @Service
 public class EventHandlerInitialization {
   Logger log = LoggerFactory.getLogger(EventHandlerInitialization.class);
   @Autowired private TaskEventMulticaster taskEventMulticaster;
   @Autowired Scheduler scheduler;
-  @Autowired SqlRunner sqlExecute;
+  @Qualifier("event-datasource")
+  @Autowired
+  DataSource dataSource;
+  @Autowired SqlRunner sqlRunner;
   @Autowired ItemRepository itemRepository;
   @Autowired EventTasksProperties eventTasksProperties;
 
@@ -119,6 +125,7 @@ public class EventHandlerInitialization {
   }
 
   public void initLoad() {
+
     long start = System.currentTimeMillis();
     log.info("start loading...");
     // 初始化数据
@@ -256,8 +263,8 @@ public class EventHandlerInitialization {
   private void checkPartition() {
     // check partition num
     for (int i = 0; i < this.partition; i++) {
-      sqlExecute.execute(String.format("select 1 from %s limit 1", ("smart_arguments_p" + i)));
-      sqlExecute.execute(String.format("select 1 from %s limit 1", ("smart_item_p" + i)));
+      sqlRunner.execute(String.format("select 1 from %s limit 1", ("smart_arguments_p" + i)));
+      sqlRunner.execute(String.format("select 1 from %s limit 1", ("smart_item_p" + i)));
     }
   }
 
@@ -273,9 +280,9 @@ public class EventHandlerInitialization {
       }
       for (int i = 0; i < 10; i++) {
         log.info("drop table if exists smart_arguments_p{}", i);
-        sqlExecute.execute("drop table if exists smart_arguments_p" + i);
+        sqlRunner.execute("drop table if exists smart_arguments_p" + i);
         log.info("drop table if exists smart_item_p{}", i);
-        sqlExecute.execute("drop table if exists smart_item_p" + i);
+        sqlRunner.execute("drop table if exists smart_item_p" + i);
         try {
           String initSqlOrigin = IOUtils.toString(resource.getInputStream());
           String initSql =
@@ -285,7 +292,7 @@ public class EventHandlerInitialization {
                   .replaceAll("[\\t\\n\\r]", "");
           for (String sql : initSql.split(";")) {
             log.info(sql);
-            sqlExecute.execute(sql);
+            sqlRunner.execute(sql);
           }
         } catch (IOException e) {
           throw new RuntimeException(e);

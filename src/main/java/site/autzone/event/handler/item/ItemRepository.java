@@ -3,11 +3,14 @@ package site.autzone.event.handler.item;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import site.autzone.event.handler.cfg.Register;
 import site.autzone.event.handler.task.TaskStatus;
 import site.autzone.sqlbee.SqlRunner;
 import site.autzone.sqlbee.builder.SqlBuilder;
 import site.autzone.sqlbee.value.Value;
+
+import javax.sql.DataSource;
 
 /**
  * Item增删改查
@@ -17,13 +20,18 @@ import site.autzone.sqlbee.value.Value;
 public class ItemRepository {
   @Autowired SqlRunner sqlRunner;
   @Autowired Register register;
+  @Qualifier("event-datasource")
+  @Autowired
+  DataSource dataSource;
   private static final SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
   
   public int[] batch(String itemP, Object[][] params) {
+
     return sqlRunner.batch("update "+ itemP + " set status_ = ?,version_=(version_+1), modify_time_ = ? where id_ = ? and version_ = ?", params);
   }
 
   public Argument getArgByItem(Item item) {
+
     return sqlRunner.queryBean(
         SqlBuilder.createQuery()
             .table("smart_arguments" + item.getPartition(), "a")
@@ -43,6 +51,7 @@ public class ItemRepository {
    * @return
    */
   public long count(Item item, TaskStatus status) {
+
     return sqlRunner.count(
         SqlBuilder.createQuery()
             .table("smart_item" + item.getPartition(), "i")
@@ -67,6 +76,7 @@ public class ItemRepository {
    * @return
    */
   public int updateTaskStatus(Item item, TaskStatus status) {
+
     return sqlRunner.update(
         "update smart_item"
             + item.getPartition()
@@ -85,6 +95,7 @@ public class ItemRepository {
    * @throws Exception
    */
   public int save(Item item) {
+
 
     int ret =
         sqlRunner.insert(
@@ -118,6 +129,7 @@ public class ItemRepository {
   }
 
   public int update(Item item) {
+
     int ret =
         sqlRunner.update(
             SqlBuilder.createUpdate().table("smart_arguments" + p(item.getId(), item.getConsumerKey()))
@@ -160,6 +172,7 @@ public class ItemRepository {
    * @return
    */
   public List<Item> findItemsByCreator(String creator) {
+
     return sqlRunner.queryBeans(
         SqlBuilder.createQuery().table("smart_item", "i")
             .condition("=")
@@ -171,6 +184,7 @@ public class ItemRepository {
   }
 
   public int delete(int maxResults, int partition) {
+
     return sqlRunner.delete(
             SqlBuilder.createDelete().table("smart_item_p" + partition, "i")
             .condition("=")
@@ -182,6 +196,7 @@ public class ItemRepository {
   }
 
   public int deleteById(long id) {
+
     return sqlRunner.delete(
             SqlBuilder.createDelete().table("smart_item")
             .condition("=")
@@ -192,12 +207,14 @@ public class ItemRepository {
   }
 
   public Iterable<Item> findAll() {
+
     return sqlRunner.queryBeans(
         SqlBuilder.createQuery().table("smart_item", "i").end().build(),
         Item.class);
   }
 
   public Item findById(long id) {
+
     return sqlRunner.queryBean(
         SqlBuilder.createQuery()
             .table("smart_item", "i")
@@ -246,6 +263,7 @@ public class ItemRepository {
             .right(new Value(status.getCode()))
             .end()
             .maxResults(maxResult);
+
     return sqlRunner.queryBeans(queryBuilder.build(), Item.class);
   }
 }

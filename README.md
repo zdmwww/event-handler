@@ -47,10 +47,10 @@ site.autzone
 ### 4. 发布一个任务示例代码
 
 ```java
-  @Autowired ItemBuilder itemBuiler;
+@Autowired ItemRepository itemRepository;
 
 //持久化Item到数据库中
-Item item = itemBuiler
+Item item = new ItemBuilder()
         .name("名称")//名称
         .desc("这是描述信息")//描述
         .consumerKey("hello_world")//消费者的key
@@ -60,12 +60,16 @@ Item item = itemBuiler
         .attr("param2", "参数2")//示例参数21
         .attr("message", "参数2")//示例参数21
         .end()
-        .save()
+        .build();
+itemRepository.save(item);
+
 
 ```
 
 ### 5. 任务处理器
 ```java
+package site.autzone.event.handler.task.handler;
+
 import java.util.Optional;
 import site.autzone.event.handler.item.rest.dto.AttributeDto;
 import site.autzone.event.handler.task.AbstractJobEventTask;

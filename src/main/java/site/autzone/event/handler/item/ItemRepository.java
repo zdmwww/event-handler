@@ -24,23 +24,23 @@ public class ItemRepository {
   @Autowired
   DataSource dataSource;
   private static final SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-  
-  public int[] batch(String itemP, Object[][] params) {
+
+  public synchronized int[] batch(String itemP, Object[][] params) {
 
     return sqlRunner.batch("update "+ itemP + " set status_ = ?,version_=(version_+1), modify_time_ = ? where id_ = ? and version_ = ?", params);
   }
 
-  public Argument getArgByItem(Item item) {
+  public synchronized Argument getArgByItem(Item item) {
 
     return sqlRunner.queryBean(
-        SqlBuilder.createQuery()
-            .table("smart_arguments" + item.getPartition(), "a")
-            .condition("=")
-            .left("a.item_id_")
-            .right(new Value(item.getId()))
-            .end()
-            .build(),
-        Argument.class);
+            SqlBuilder.createQuery()
+                    .table("smart_arguments" + item.getPartition(), "a")
+                    .condition("=")
+                    .left("a.item_id_")
+                    .right(new Value(item.getId()))
+                    .end()
+                    .build(),
+            Argument.class);
   }
 
   /**
@@ -50,22 +50,22 @@ public class ItemRepository {
    * @param status
    * @return
    */
-  public long count(Item item, TaskStatus status) {
+  public synchronized long count(Item item, TaskStatus status) {
 
     return sqlRunner.count(
-        SqlBuilder.createQuery()
-            .table("smart_item" + item.getPartition(), "i")
-            .end()
-            .condition("=")
-            .left("i.id_")
-            .right(new Value(item.getId()))
-            .end()
-            .condition("=")
-            .left("i.status_")
-            .right(new Value(status.getCode()))
-            .end()
-            .isCount()
-            .build());
+            SqlBuilder.createQuery()
+                    .table("smart_item" + item.getPartition(), "i")
+                    .end()
+                    .condition("=")
+                    .left("i.id_")
+                    .right(new Value(item.getId()))
+                    .end()
+                    .condition("=")
+                    .left("i.status_")
+                    .right(new Value(status.getCode()))
+                    .end()
+                    .isCount()
+                    .build());
   }
 
   /**
@@ -75,16 +75,16 @@ public class ItemRepository {
    * @param status
    * @return
    */
-  public int updateTaskStatus(Item item, TaskStatus status) {
+  public synchronized int updateTaskStatus(Item item, TaskStatus status) {
 
     return sqlRunner.update(
-        "update smart_item"
-            + item.getPartition()
-            + " set status_ = ?,finish_message_ = ?,version_ = (version_+1) where id_ = ? and version_ = ?",
-        status.getCode(),
-        status.getName(),
-        item.getId(),
-        item.getVersion());
+            "update smart_item"
+                    + item.getPartition()
+                    + " set status_ = ?,finish_message_ = ?,version_ = (version_+1) where id_ = ? and version_ = ?",
+            status.getCode(),
+            status.getName(),
+            item.getId(),
+            item.getVersion());
   }
 
   /**
@@ -94,72 +94,72 @@ public class ItemRepository {
    * @return
    * @throws Exception
    */
-  public int save(Item item) {
+  public synchronized int save(Item item) {
 
 
     int ret =
-        sqlRunner.insert(
-            SqlBuilder.createInsert()
-                .table("smart_arguments" + p(item.getId(), item.getConsumerKey()))
-                .column("item_id_", new Value(item.getId()))
-                .column("value_", new Value(item.getAttribute().getValue()))
-                .build());
+            sqlRunner.insert(
+                    SqlBuilder.createInsert()
+                            .table("smart_arguments" + p(item.getId(), item.getConsumerKey()))
+                            .column("item_id_", new Value(item.getId()))
+                            .column("value_", new Value(item.getAttribute().getValue()))
+                            .build());
     if (ret == 1) {
       return sqlRunner.insert(
               SqlBuilder.createInsert()
                       .table("smart_item" + p(item.getId(), item.getConsumerKey()))
-              .column("id_", new Value(item.getId()))
-              .column("batch_id_", new Value(item.getBatchId()))
-              .column("consumer_key_", new Value(item.getConsumerKey()))
-              .column("create_time_", new Value(dateformat.format(item.getCreateTime())))
-              .column("creator_", new Value(item.getCreator()))
-              .column("desc_", new Value(item.getDesc()))
-              .column("detail_", new Value(item.getDetail()))
-              .column("finish_message_", new Value(item.getFinishMessage()))
-              .column("item_source_", new Value(item.getItemSource()))
-              .column("modify_time_", new Value(dateformat.format(item.getModifyTime())))
-              .column("name_", new Value(item.getName()))
-              .column("route_key_", new Value(item.getRouteKey()))
-              .column("status_", new Value(item.getStatus()))
-              .column("version_", new Value(item.getVersion()))
-              .build());
+                      .column("id_", new Value(item.getId()))
+                      .column("batch_id_", new Value(item.getBatchId()))
+                      .column("consumer_key_", new Value(item.getConsumerKey()))
+                      .column("create_time_", new Value(dateformat.format(item.getCreateTime())))
+                      .column("creator_", new Value(item.getCreator()))
+                      .column("desc_", new Value(item.getDesc()))
+                      .column("detail_", new Value(item.getDetail()))
+                      .column("finish_message_", new Value(item.getFinishMessage()))
+                      .column("item_source_", new Value(item.getItemSource()))
+                      .column("modify_time_", new Value(dateformat.format(item.getModifyTime())))
+                      .column("name_", new Value(item.getName()))
+                      .column("route_key_", new Value(item.getRouteKey()))
+                      .column("status_", new Value(item.getStatus()))
+                      .column("version_", new Value(item.getVersion()))
+                      .build());
     } else {
       return ret;
     }
   }
 
-  public int update(Item item) {
+  public synchronized int update(Item item) {
 
     int ret =
-        sqlRunner.update(
-            SqlBuilder.createUpdate().table("smart_arguments" + p(item.getId(), item.getConsumerKey()))
-                .column("item_id_", new Value(item.getId()))
-                .column("value_", new Value(item.getAttribute().getValue()))
-                .condition("=")
-                .left("item_id_")
-                .right(new Value(item.getId())).end()
-                .build());
+            sqlRunner.update(
+                    SqlBuilder.createUpdate().table("smart_arguments" + p(item.getId(), item.getConsumerKey()))
+                            .column("item_id_", new Value(item.getId()))
+                            .column("value_", new Value(item.getAttribute().getValue()))
+                            .condition("=")
+                            .left("item_id_")
+                            .right(new Value(item.getId())).end()
+                            .build());
     if (ret == 1) {
       return sqlRunner.update(
               SqlBuilder.createUpdate().table("smart_item" + p(item.getId(), item.getConsumerKey()))
-              .column("batch_id_", new Value(item.getBatchId()))
-              .column("consumer_key_", new Value(item.getConsumerKey()))
-              .column("create_time_", new Value(dateformat.format(item.getCreateTime())))
-              .column("creator_", new Value(item.getCreator()))
-              .column("desc_", new Value(item.getDesc()))
-              .column("detail_", new Value(item.getDetail()))
-              .column("finish_message_", new Value(item.getFinishMessage()))
-              .column("item_source_", new Value(item.getItemSource()))
-              .column("modify_time_", new Value(dateformat.format(item.getModifyTime())))
-              .column("name_", new Value(item.getName()))
-              .column("route_key_", new Value(item.getRouteKey()))
-              .column("status_", new Value(item.getStatus()))
-              .column("version_", new Value(item.getVersion()))
-              .condition("=")
-              .left("id_")
-              .right(new Value(item.getId()))
-              .end()
-              .build());
+                      .column("batch_id_", new Value(item.getBatchId()))
+                      .column("consumer_key_", new Value(item.getConsumerKey()))
+                      .column("create_time_", new Value(dateformat.format(item.getCreateTime())))
+                      .column("creator_", new Value(item.getCreator()))
+                      .column("desc_", new Value(item.getDesc()))
+                      .column("detail_", new Value(item.getDetail()))
+                      .column("finish_message_", new Value(item.getFinishMessage()))
+                      .column("item_source_", new Value(item.getItemSource()))
+                      .column("modify_time_", new Value(dateformat.format(item.getModifyTime())))
+                      .column("name_", new Value(item.getName()))
+                      .column("route_key_", new Value(item.getRouteKey()))
+                      .column("status_", new Value(item.getStatus()))
+                      .column("version_", new Value(item.getVersion()))
+                      .condition("=")
+                      .left("id_")
+                      .right(new Value(item.getId()))
+                      .end()
+                      .build());
     } else {
       return ret;
     }
@@ -171,62 +171,62 @@ public class ItemRepository {
    * @param creator
    * @return
    */
-  public List<Item> findItemsByCreator(String creator) {
+  public synchronized List<Item> findItemsByCreator(String creator) {
 
     return sqlRunner.queryBeans(
-        SqlBuilder.createQuery().table("smart_item", "i")
-            .condition("=")
-            .left("i.creator_")
-            .right(new Value(creator))
-            .end()
-            .build(),
-        Item.class);
+            SqlBuilder.createQuery().table("smart_item", "i")
+                    .condition("=")
+                    .left("i.creator_")
+                    .right(new Value(creator))
+                    .end()
+                    .build(),
+            Item.class);
   }
 
-  public int delete(int maxResults, int partition) {
+  public synchronized int delete(int maxResults, int partition) {
 
     return sqlRunner.delete(
             SqlBuilder.createDelete().table("smart_item_p" + partition, "i")
-            .condition("=")
-            .left("i.status_")
-            .right(new Value(TaskStatus.RanToCompletion.getCode()))
-            .end()
-            .maxResults(maxResults)
-            .build());
+                    .condition("=")
+                    .left("i.status_")
+                    .right(new Value(TaskStatus.RanToCompletion.getCode()))
+                    .end()
+                    .maxResults(maxResults)
+                    .build());
   }
 
-  public int deleteById(long id) {
+  public synchronized int deleteById(long id) {
 
     return sqlRunner.delete(
             SqlBuilder.createDelete().table("smart_item")
-            .condition("=")
-            .left("id_")
-            .right(new Value(id))
-            .end()
-            .build());
+                    .condition("=")
+                    .left("id_")
+                    .right(new Value(id))
+                    .end()
+                    .build());
   }
 
-  public Iterable<Item> findAll() {
+  public synchronized Iterable<Item> findAll() {
 
     return sqlRunner.queryBeans(
-        SqlBuilder.createQuery().table("smart_item", "i").end().build(),
-        Item.class);
+            SqlBuilder.createQuery().table("smart_item", "i").end().build(),
+            Item.class);
   }
 
-  public Item findById(long id) {
+  public synchronized Item findById(long id) {
 
     return sqlRunner.queryBean(
-        SqlBuilder.createQuery()
-            .table("smart_item", "i")
-            .condition("=")
-            .left("id_")
-            .right(new Value(id))
-            .end()
-            .build(),
-        Item.class);
+            SqlBuilder.createQuery()
+                    .table("smart_item", "i")
+                    .condition("=")
+                    .left("id_")
+                    .right(new Value(id))
+                    .end()
+                    .build(),
+            Item.class);
   }
 
-  private String p(long id, String consumerKey) {
+  private synchronized String p(long id, String consumerKey) {
     int fetchers = register.getRegisterTaskProperties().get(consumerKey).getFetchers();
     if (fetchers == 0) {
       return "_p0";
@@ -242,18 +242,9 @@ public class ItemRepository {
    * @param status
    * @return
    */
-  public List<Item> fetchItems(
-      String tableName, String consumerKey, int maxResult, TaskStatus status) {
+  public  synchronized List<Item> fetchItems(
+          String tableName, String consumerKey, int maxResult, TaskStatus status) {
     SqlBuilder queryBuilder = SqlBuilder.createQuery().table(tableName, "i")
-            .column("i.id_")
-            .column("i.version_")
-            .column("i.NAME_")
-            .column("i.BATCH_ID_")
-            .column("i.CREATOR_")
-            .column("i.ROUTE_KEY_")
-            .column("i.CREATE_TIME_")
-            .column("i.ITEM_SOURCE_")
-            .column("i.consumer_key_")
             .condition("=")
             .left("i.consumer_key_")
             .right(new Value(consumerKey))

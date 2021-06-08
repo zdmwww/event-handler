@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 import site.autzone.event.handler.cfg.EventTaskProperties;
 import site.autzone.event.handler.cfg.EventTasksProperties;
 import site.autzone.event.handler.item.Item;
@@ -100,6 +101,9 @@ public class Fetcher implements Runnable, Manageable {
   public int fetchAndLock(String consumerKey, int maxResult) {
     List<Item> items =
         itemRepository.fetchItems(this.itemP, consumerKey, maxResult, TaskStatus.Created);
+    if(CollectionUtils.isEmpty(items)){
+      return 0;
+    }
     Object[][] params = new Object[items.size()][4];
     for (int i = 0; i < items.size(); i++) {
       Item item = items.get(i);

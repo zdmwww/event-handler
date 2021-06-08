@@ -26,6 +26,21 @@
 		<sqlbee.version>0.0.5-SNAPSHOT</sqlbee.version>
 	</properties>
 
+	<repositories>
+		<repository>
+			<id>cmiot-nexus-wuxi</id>
+			<name>nexus</name>
+			<url>http://10.15.2.56:8081/repository/maven-public/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<dependency>
 			<groupId>site.autzone.sqlbee</groupId>
@@ -105,11 +120,11 @@
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<version>2.7</version>
-			</plugin>
+<!--			<plugin>-->
+<!--				<groupId>org.apache.maven.plugins</groupId>-->
+<!--				<artifactId>maven-eclipse-plugin</artifactId>-->
+<!--				<version>2.7</version>-->
+<!--			</plugin>-->
 		</plugins>
 	</build>
 
@@ -117,7 +132,7 @@
 		<profile>
 			<id>event</id>
 			<activation>
-				<activeByDefault>true</activeByDefault>
+				<activeByDefault>false</activeByDefault>
 			</activation>
 			<dependencies>
 				<dependency>
@@ -133,4 +148,18 @@
 			</dependencies>
 		</profile>
 	</profiles>
+
+	<distributionManagement>
+		<repository>
+			<id>cmiot-nexus-wuxi</id>
+			<name>nexus</name>
+			<url>http://10.15.2.56:8081/repository/maven-releases/</url>
+		</repository>
+
+		<snapshotRepository>
+			<id>cmiot-nexus-wuxi</id>
+			<name>nexus</name>
+			<url>http://10.15.2.56:8081/repository/maven-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>

@@ -2,6 +2,9 @@ package site.autzone.event.handler.item;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import site.autzone.event.handler.cfg.Register;
@@ -18,6 +21,9 @@ import javax.sql.DataSource;
  * @author wisesean
  */
 public class ItemRepository {
+
+  private static Logger logger= LoggerFactory.getLogger(ItemRepository.class);
+
   @Autowired SqlRunner sqlRunner;
   @Autowired Register register;
   @Qualifier("event-datasource")
@@ -242,8 +248,7 @@ public class ItemRepository {
    * @param status
    * @return
    */
-  public  synchronized List<Item> fetchItems(
-          String tableName, String consumerKey, int maxResult, TaskStatus status) {
+  public  synchronized List<Item> fetchItems(String tableName, String consumerKey, int maxResult, TaskStatus status) {
     SqlBuilder queryBuilder = SqlBuilder.createQuery().table(tableName, "i")
             .condition("=")
             .left("i.consumer_key_")
